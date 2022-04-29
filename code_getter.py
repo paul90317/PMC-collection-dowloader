@@ -12,7 +12,7 @@ def get_collection(url):
             data[1]=crawl.mirror(url)
         else:
             data[0]='code'
-            data[1]=f'curl {url} {data[1]}.zip'
+            data[1]=f'curl {url} -o {data[1]}.zip'
         return data
 
     code_dp=''
