@@ -20,10 +20,15 @@ async def on_ready():
 async def on_message(message:discord.Message):
     if message.author == client.user:
         return
-    url=message.content
-    if not url:
+    cmd=message.content
+    if not cmd:
         return
+    cmd=cmd.split(' ')
+    if cmd[0] != 'cdl':
+        return
+    url=cmd[1]
     if not re_url.fullmatch(url):
+        await message.channel.send(f'Please give me a link of inecraft planet collection.')
         return
 
     try:
@@ -31,7 +36,7 @@ async def on_message(message:discord.Message):
         await message.channel.send(f'Preparing the collection \"{cname}\" ...')
         dp,rp=get_collection(url)
     except:
-        await message.channel.send('This link is unvalid :((')
+        await message.channel.send('This link is not minecraft planet collection :((')
         return
 
     files=[]
