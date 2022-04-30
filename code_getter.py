@@ -2,37 +2,36 @@ import crawl
 
 
 def get_collection(url):
-    def code_gen(url):
+    def url_get(url):
+        mir=False
         if not url:
-            return None
+            return mir,None
         data=url.split('/')
-        data=[data[6],data[4]]
-        if data[0]=='mirror':
-            data[0]='link'
-            data[1]=crawl.mirror(url)
-        else:
-            data[0]='code'
-            data[1]=f'curl {url} -o {data[1]}.zip'
-        return data
+        url_type=data[6]
+        if url_type=='mirror':
+            mir=True
+            url=crawl.mirror(url)
+        
+        return mir,url
 
-    code_dp=''
-    link_dp=''
-    code_rp=''
-    link_rp=''
+    dl_dp=[]
+    mir_dp=[]
+    dl_rp=[]
+    mir_rp=[]
     urls=crawl.collection(url)
     for url in urls:
         dp,rp=crawl.download(url)
-        temp=code_gen(dp)
-        if temp:
-            if(temp[0]=='code'):
-                code_dp+=temp[1]+'\n'
+        mir,url=url_get(dp)
+        if url:
+            if(mir):
+                mir_dp.append(url)
             else:
-                link_dp+=temp[1]+'\n'
-        temp=code_gen(rp)
-        if temp:
-            if(temp[0]=='code'):
-                code_rp+=temp[1]+'\n'
+                dl_dp.append(url)
+        mir,url=url_get(rp)
+        if url:
+            if(mir):
+                mir_rp.append(url)
             else:
-                link_rp+=temp[1]+'\n'
+                dl_rp.append(url)
 
-    return code_dp, code_rp,link_dp,link_rp
+    return dl_dp+mir_dp,dl_rp+mir_rp

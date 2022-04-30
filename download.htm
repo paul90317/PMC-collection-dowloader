@@ -1,0 +1,27 @@
+<html>
+
+<head>
+    <script>
+        function bdload() {
+            var urls = {urls}
+
+            for (var i in urls) {
+                download(urls[i]);
+            }
+
+            function download(url) {
+                var a = document.createElement("a");
+                a.setAttribute('href', url);
+                a.setAttribute('download', '');
+                a.setAttribute('target', '_blank');
+                a.click();
+            }
+        }
+    </script>
+</head>
+
+<body onload="bdload()">
+
+</body>
+
+</html>
