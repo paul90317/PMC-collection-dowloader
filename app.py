@@ -1,4 +1,3 @@
-from posixpath import split
 import re
 import discord
 import io
