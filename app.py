@@ -5,7 +5,6 @@ import io
 from code_getter import get_collection
 from dotenv import load_dotenv
 import os
-from discord.ext import commands
 
 bot = discord.Client()
 re_url=re.compile('https?:\/\/[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)*(\/\S*)?')
