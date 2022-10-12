@@ -1,6 +1,8 @@
 from tempfile import TemporaryFile
 import crawl
 
+html_data=open('download.htm','r',encoding='utf-8').read()
+
 def collection_to_page(collection_link):
     def classify_projects(links):
         ret={}
@@ -64,7 +66,7 @@ def collection_to_page(collection_link):
             else:
                 texture_packs+=texture_pack
 
-    data=open('download.htm','r').read()
+    data=html_data
     data=data.replace('collection_name',collection_link,-1)
     data=data.replace('[\'data_packs\']',str(data_packs))
     data=data.replace('[\'texture_packs\']',str(texture_packs))
