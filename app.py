@@ -41,7 +41,6 @@ async def on_message(message:discord.Message):
 
     files=[]
     files.append(discord.File(io_get(data),filename='download.htm'))
-    print(data)
     content=f'Hello, the collection \"{cname}\" is prepared!\nRun download.htm below with chrome!'
     print("[Debug] Crawl Successfully")
     await message.channel.send(content, files=files)
