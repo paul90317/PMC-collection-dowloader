@@ -1,77 +1,102 @@
-from tempfile import TemporaryFile
 import crawl
 
 html_data=open('download.htm','r',encoding='utf-8').read()
 
-def collection_to_page(collection_link):
-    def classify_projects(links):
-        ret={}
-        for link in links:
-            key=link.split('/')[3]
-            if key not in ret:
-                ret[key]=[link]
-            else:
-                ret[key].append(link)
-        return ret
-
-    data=crawl.expand_collection(collection_link)
-    data=classify_projects(data)
-    data_packs=[]
-    texture_packs=[]
-
-    if 'data-pack' in data:
-        for link in data['data-pack']:
-            data_pack,texture_pack=crawl.expand_datapack(link)
-            data_packs+=data_pack
-            texture_packs+=texture_pack
-    if 'texture-pack' in data:
-        for link in data['texture-pack']:
-            texture_packs+=crawl.expand_other(link)
-
-    others=[]
-    for key in data:
-        if key=='data-pack'or key=='texture-pack':
-            continue
-        others+=data[key]
-
-    temp=data_packs
-    data_packs=[]
-    for link in temp:
-        key=link.split('/')[6]
-        if key=='file':
-            data_packs+=[link]
+def collection_classify(url:str):
+    packs=crawl.expand_collection(url)
+    dps=[]
+    tps=[]
+    ots=[]
+    for url in packs:
+        if crawl.is_datapack(url):
+            dps.append(url)
+        elif crawl.is_texturepack(url):
+            tps.append(url)
         else:
-            data_pack=crawl.expand_mirror(link)
-            domain=data_pack[0].split('/')[2]
-            if domain=='www.mediafire.com':
-                data_packs+=crawl.expand_mediafire(data_pack[0])
-            elif domain=='adfoc.us':
-                data_packs+=crawl.expand_adfoc(data_pack[0])
+            ots.append(url)
+    for iii in range(5):
+        nochange=True
+        dps2=[]
+        for url in dps:
+            if crawl.is_datapack(url):
+                dp,tp=crawl.expand_datapack(url)
+                dps2+=dp
+                tps+=tp
+                if dp[0]!=url:
+                    nochange=False
+            elif crawl.is_curseforge(url):
+                dp=crawl.expand_curseforge(url)
+                dps2+=dp
+                nochange=False
+            elif crawl.is_adfoc(url):
+                dp=crawl.expand_adfoc(url)
+                dps2+=dp
+                if dp[0]!=url:
+                    nochange=False
+            elif crawl.is_mediafire(url):
+                dp=crawl.expand_mediafire(url)
+                dps2+=dp
+                if dp[0]!=url:
+                    nochange=False
+            elif crawl.is_mirror(url):
+                dp=crawl.expand_mirror(url)
+                dps2+=dp
+                if dp[0]!=url:
+                    nochange=False
+            elif crawl.is_ignore(url):
+                ots.append(url)
             else:
-                data_packs+=data_pack
-            
-
-    temp=texture_packs
-    texture_packs=[]
-    for link in temp:
-        key=link.split('/')[6]
-        if key=='file':
-            texture_packs+=[link]
-        else:
-            texture_pack=crawl.expand_mirror(link)
-            domain=texture_pack[0].split('/')[2]
-            if domain=='www.mediafire.com':
-                texture_packs+=crawl.expand_mediafire(texture_pack[0])
-            elif domain=='adfoc.us':
-                texture_packs+=crawl.expand_adfoc(texture_pack[0])
+                dps2.append(url)
+        dps=dps2
+        if nochange:
+            break
+        
+    for iii in range(5):
+        nochange=True
+        tps2=[]
+        for url in tps:
+            if crawl.is_texturepack(url):
+                tp=crawl.expand_texture(url)
+                tps2+=tp
+                if tp[0]!=url:
+                    nochange=False
+            elif crawl.is_curseforge(url):
+                tp=crawl.expand_curseforge(url)
+                tps2+=tp
+                nochange=False
+            elif crawl.is_adfoc(url):
+                tp=crawl.expand_adfoc(url)
+                tps2+=tp
+                if tp[0]!=url:
+                    nochange=False
+            elif crawl.is_mediafire(url):
+                tp=crawl.expand_mediafire(url)
+                tps2+=tp
+                if tp[0]!=url:
+                    nochange=False
+            elif crawl.is_mirror(url):
+                tp=crawl.expand_mirror(url)
+                tps2+=tp
+                if tp[0]!=url:
+                    nochange=False
+            elif crawl.is_ignore(url):
+                ots.append(url)
             else:
-                texture_packs+=texture_pack
+                tps2.append(url)
+        tps=tps2
+        if nochange:
+            break
+       
+    return dps,tps,ots
+    
 
+def collection_to_page(url):
+    dps,tps,ots=collection_classify(url)
     data=html_data
-    data=data.replace('collection_name',collection_link,-1)
-    data=data.replace('[\'data_packs\']',str(data_packs))
-    data=data.replace('[\'texture_packs\']',str(texture_packs))
-    data=data.replace('[\'others\']',str(others))
+    data=data.replace('collection_name',url,-1)
+    data=data.replace('[\'data_packs\']',str(dps))
+    data=data.replace('[\'texture_packs\']',str(tps))
+    data=data.replace('[\'others\']',str(ots))
     return data
 
 if __name__=='__main__':

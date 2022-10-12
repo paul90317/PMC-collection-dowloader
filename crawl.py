@@ -1,19 +1,32 @@
 import json
 import urllib.request as client
+from xml import dom
 from bs4 import BeautifulSoup as bfs
 
 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
 accept='text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
 
-def expand_collection(url):
+def url_to_data(url:str):
+    try:
+        req=client.Request(url,headers={
+            "user-agent":user_agent,
+            'accept':accept
+        })
+
+        with client.urlopen(req,timeout=2) as res:
+            return res.read().decode('utf-8')
+    except:
+        return False
+
+def is_collection(url:str):
+    sp=url.split('/')
+    if len(sp)>=4 and sp[2]=='www.planetminecraft.com'and sp[3]=='collection':
+        return True
+    return False
+
+def expand_collection(url:str):
     root_url='https://www.planetminecraft.com'
-    req=client.Request(url,headers={
-        "user-agent":user_agent
-    })
-
-    with client.urlopen(req) as res:
-        data=res.read().decode('utf-8')
-
+    data=url_to_data(url)
     root = bfs(data, 'html.parser')
     root=root.find('ul',class_='resource_list grid')
     root=root.find_all('a',class_='r-title')
@@ -22,18 +35,17 @@ def expand_collection(url):
         data.append(root_url+atag['href'])
     return data
 
-def expand_datapack(url):
+def is_datapack(url:str):
+    temp=[d for d in url.split('/') if d!='']
+    if len(temp)==4 and temp[1]=='www.planetminecraft.com'and temp[2]=='data-pack':
+        return True
+    return False
+
+def expand_datapack(url:str):
     try:
         root_url='https://www.planetminecraft.com'
-        req=client.Request(url,headers={
-            "user-agent":user_agent
-        })
-
-        with client.urlopen(req) as res:
-            data=res.read().decode('utf-8')
-
+        data=url_to_data(url)
         root = bfs(data, 'html.parser')
-
         temp=root.find('ul',class_='content-actions').find_all('a')
         data_packs=[root_url+d['href'] for d in temp]
         temp=root.find('div',class_='content-actions')
@@ -46,56 +58,80 @@ def expand_datapack(url):
     except:
         return [url],[]
 
-def expand_other(url):
+def is_texturepack(url:str):
+    temp=[d for d in url.split('/') if d!='']
+    if len(temp)==4 and temp[1]=='www.planetminecraft.com'and temp[2]=='texture-pack':
+        return True
+    return False
+
+def expand_texture(url:str):
     try:
         root_url='https://www.planetminecraft.com'
-        req=client.Request(url,headers={
-            "user-agent":user_agent
-        })
-
-        with client.urlopen(req) as res:
-            data=res.read().decode('utf-8')
-
+        data=url_to_data(url)
         root = bfs(data, 'html.parser')
         temp=root.find('ul',class_='content-actions').find_all('a')
         return [root_url+d['href'] for d in temp]
     except:
         return [url]
+    
+def is_mirror(url:str):
+    sp=url.split('/')
+    if len(sp)>=7 and(sp[6]=='mirror'or sp[6]=='website')and sp[2]=='www.planetminecraft.com':
+        return True
+    return False
 
-
-def expand_mirror(url):
+def expand_mirror(url:str):
     try:
-        req=client.Request(url,headers={
-            "user-agent":user_agent
-        })
-        with client.urlopen(req) as res:
-            data=res.read().decode('utf-8')
+        data=url_to_data(url)
         return [json.loads(data)['forward_url']]
     except:
         return [url]
 
-def expand_mediafire(url):
+def is_mediafire(url:str):
+    sp=url.split('/')
+    if len(sp)>=3 and sp[2]=='www.mediafire.com':
+        return True
+    return False
+
+def expand_mediafire(url:str):
     try:
-        req=client.Request(url,headers={
-            "user-agent":user_agent
-        })
-        with client.urlopen(req) as res:
-            data=res.read().decode('utf-8')
+        data=url_to_data(url)
         root = bfs(data, 'html.parser')
         return [root.find('a',class_='input popsok')['href']]
     except:
         return [url]
 
-def expand_adfoc(url):
+def is_adfoc(url:str):
+    sp=url.split('/')
+    if len(sp)>=3 and sp[2]=='adfoc.us':
+        return True
+    return False
+
+def expand_adfoc(url:str):
     try:
-        req=client.Request(url,headers={
-            "user-agent":user_agent,
-            'accept':accept
-        })
-        with client.urlopen(req) as res:
-            data=res.read().decode('utf-8')
+        data=url_to_data(url)
         root = bfs(data, 'html.parser')
         return [root.find('a',class_='skip')['href']]
     except:
         return [url]
 
+def is_curseforge(url:str):
+    temp=[d for d in url.split('/') if d!='']
+    if len(temp)>=2 and temp[1]=='www.curseforge.com':
+        try:
+            int(temp[len(temp)-1])
+            return True
+        except:
+            pass
+    return False
+
+def expand_curseforge(url:str):
+    url+='file'if url[len(url)-1]=='/' else '/file'
+    return [url]
+
+def is_ignore(url:str):
+    temp=[u for u in url.split('/')if u!='']
+    domain=temp[1]
+    if domain=='discord.com' or domain=='discord.gg' or (domain=='github.com'and len(temp)<=4)or domain=='youtu.be'or domain=='youtube.com'or domain=='www.youtube.com':
+        return True
+    return False
