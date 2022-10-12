@@ -50,6 +50,7 @@ async def on_message(message:discord.Message):
         return
 
     nonce=random.randrange(100000000)
+    global file_temp
     if len(file_temp)==1000:
         file_temp={}
     file_temp[nonce]=data
