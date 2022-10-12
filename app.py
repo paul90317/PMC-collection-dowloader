@@ -4,7 +4,7 @@ from get_code import collection_to_page
 from dotenv import load_dotenv
 import os
 
-bot = discord.Client()
+bot = discord.Client(intents=discord.Intents(messages=True,guilds=True))
 
 def io_get(data:str):
     return io.BytesIO(data.encode('utf-8'))
