@@ -13,7 +13,7 @@ load_dotenv()
 file_temp={}
 domain=os.getenv('DOMAIN')
 
-@app.route('/')
+@app.get('/')
 def home():
     try:
         return file_temp[request.args.get('nonce')]
