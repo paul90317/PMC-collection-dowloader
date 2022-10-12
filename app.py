@@ -16,6 +16,7 @@ domain=os.getenv('DOMAIN')
 @app.get('/')
 def home():
     try:
+        print(request.args.get('nonce'))
         return file_temp[request.args.get('nonce')]
     except:
         return ''
