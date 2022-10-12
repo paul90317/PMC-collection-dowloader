@@ -1,25 +1,13 @@
-from crypt import methods
-import random
 import discord
+import io
 from get_code import collection_to_page
 from dotenv import load_dotenv
 import os
-from flask import Flask,request
-import threading
 
-app = Flask(__name__)
-bot = discord.Client(intents=discord.Intents.default())
-load_dotenv()
+bot = discord.Client()
 
-file_temp={}
-domain=os.getenv('DOMAIN')
-
-@app.route('/',methods=['GET'])
-def home():
-    try:
-        return file_temp[request.args.get('nonce')]
-    except:
-        return ''
+def io_get(data:str):
+    return io.BytesIO(data.encode('utf-8'))
 
 @bot.event
 async def on_message(message:discord.Message):
@@ -50,25 +38,18 @@ async def on_message(message:discord.Message):
         print("[Debug] Crawl Error")
         return
 
-    nonce=random.randrange(100000000)
-    global file_temp
-    if len(file_temp)==1000:
-        file_temp={}
-    file_temp[nonce]=data
-    content=f'Hello, the collection \"{cname}\" is prepared!\nhttps://{domain}/?nonce={nonce}'
+    files=[]
+    files.append(discord.File(io_get(data),filename='download.htm'))
+    content=f'Hello, the collection \"{cname}\" is prepared!\nRun download.htm below with chrome!'
     print("[Debug] Crawl Successfully")
-    await message.channel.send(content)
+    await message.channel.send(content, files=files)
+    
+
+load_dotenv()
 
 @bot.event
 async def on_ready():
     id=os.getenv('ID')
     print(f'https://discord.com/oauth2/authorize?client_id={id}&permissions=0&scope=bot%20applications.commands')
 
-
-def flask_run():
-    app.run(port=int(os.getenv('PORT',80)))
-
-if __name__=='__main__':
-    t=threading.Thread(target=flask_run)
-    t.start()
-    bot.run(os.getenv('TOKEN'))
+bot.run(os.getenv('TOKEN'))
