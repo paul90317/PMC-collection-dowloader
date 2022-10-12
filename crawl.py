@@ -23,64 +23,79 @@ def expand_collection(url):
     return data
 
 def expand_datapack(url):
-    root_url='https://www.planetminecraft.com'
-    req=client.Request(url,headers={
-        "user-agent":user_agent
-    })
+    try:
+        root_url='https://www.planetminecraft.com'
+        req=client.Request(url,headers={
+            "user-agent":user_agent
+        })
 
-    with client.urlopen(req) as res:
-        data=res.read().decode('utf-8')
+        with client.urlopen(req) as res:
+            data=res.read().decode('utf-8')
 
-    root = bfs(data, 'html.parser')
+        root = bfs(data, 'html.parser')
 
-    temp=root.find('ul',class_='content-actions').find_all('a')
-    data_packs=[root_url+d['href'] for d in temp]
-    temp=root.find('div',class_='content-actions')
-    if temp!=None:
-        temp=temp.find_all('a')
-        texture_packs=[root_url+d['href'] for d in temp]
-    else:
-        texture_packs=[]
-    return data_packs,texture_packs
+        temp=root.find('ul',class_='content-actions').find_all('a')
+        data_packs=[root_url+d['href'] for d in temp]
+        temp=root.find('div',class_='content-actions')
+        if temp!=None:
+            temp=temp.find_all('a')
+            texture_packs=[root_url+d['href'] for d in temp]
+        else:
+            texture_packs=[]
+        return data_packs,texture_packs
+    except:
+        return [url],[]
 
 def expand_other(url):
-    root_url='https://www.planetminecraft.com'
-    req=client.Request(url,headers={
-        "user-agent":user_agent
-    })
+    try:
+        root_url='https://www.planetminecraft.com'
+        req=client.Request(url,headers={
+            "user-agent":user_agent
+        })
 
-    with client.urlopen(req) as res:
-        data=res.read().decode('utf-8')
+        with client.urlopen(req) as res:
+            data=res.read().decode('utf-8')
 
-    root = bfs(data, 'html.parser')
-    temp=root.find('ul',class_='content-actions').find_all('a')
-    return [root_url+d['href'] for d in temp]
+        root = bfs(data, 'html.parser')
+        temp=root.find('ul',class_='content-actions').find_all('a')
+        return [root_url+d['href'] for d in temp]
+    except:
+        return [url]
 
 
 def expand_mirror(url):
-    req=client.Request(url,headers={
-        "user-agent":user_agent
-    })
-    with client.urlopen(req) as res:
-        data=res.read().decode('utf-8')
-    return [json.loads(data)['forward_url']]
+    try:
+        req=client.Request(url,headers={
+            "user-agent":user_agent
+        })
+        with client.urlopen(req) as res:
+            data=res.read().decode('utf-8')
+        return [json.loads(data)['forward_url']]
+    except:
+        return [url]
 
 def expand_mediafire(url):
-    req=client.Request(url,headers={
-        "user-agent":user_agent
-    })
-    with client.urlopen(req) as res:
-        data=res.read().decode('utf-8')
-    root = bfs(data, 'html.parser')
-    return [root.find('a',class_='input popsok')['href']]
+    try:
+        req=client.Request(url,headers={
+            "user-agent":user_agent
+        })
+        with client.urlopen(req) as res:
+            data=res.read().decode('utf-8')
+        root = bfs(data, 'html.parser')
+        return [root.find('a',class_='input popsok')['href']]
+    except:
+        return [url]
 
 def expand_adfoc(url):
-    req=client.Request(url,headers={
-        "user-agent":user_agent,
-        'accept':accept
-    })
-    with client.urlopen(req) as res:
-        data=res.read().decode('utf-8')
-    root = bfs(data, 'html.parser')
-    return [root.find('a',class_='skip')['href']]
+    try:
+        req=client.Request(url,headers={
+            "user-agent":user_agent,
+            'accept':accept
+        })
+        with client.urlopen(req) as res:
+            data=res.read().decode('utf-8')
+        root = bfs(data, 'html.parser')
+        return [root.find('a',class_='skip')['href']]
+    except:
+        return [url]
 

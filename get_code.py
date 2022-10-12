@@ -19,13 +19,14 @@ def collection_to_page(collection_link):
     data_packs=[]
     texture_packs=[]
 
-    for link in data['data-pack']:
-        data_pack,texture_pack=crawl.expand_datapack(link)
-        data_packs+=data_pack
-        texture_packs+=texture_pack
-
-    for link in data['texture-pack']:
-        texture_packs+=crawl.expand_other(link)
+    if 'data-pack' in data:
+        for link in data['data-pack']:
+            data_pack,texture_pack=crawl.expand_datapack(link)
+            data_packs+=data_pack
+            texture_packs+=texture_pack
+    if 'texture-pack' in data:
+        for link in data['texture-pack']:
+            texture_packs+=crawl.expand_other(link)
 
     others=[]
     for key in data:
