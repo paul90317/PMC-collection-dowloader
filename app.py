@@ -64,7 +64,11 @@ async def on_ready():
     id=os.getenv('ID')
     print(f'https://discord.com/oauth2/authorize?client_id={id}&permissions=0&scope=bot%20applications.commands')
 
+
+def flask_run():
+    app.run(port=int(os.environ.get('PORT',80)))
+
 if __name__=='__main__':
-    t=threading.Thread(target=app.run)
+    t=threading.Thread(target=flask_run)
     t.start()
     bot.run(os.getenv('TOKEN'))
