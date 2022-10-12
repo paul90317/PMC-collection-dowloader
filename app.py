@@ -31,8 +31,7 @@ async def cdl(ctx:commands.context.Context, url:str):
 
 @bot.event
 async def on_ready():
-    id=os.getenv('ID')
-    print(f'https://discord.com/oauth2/authorize?client_id={id}&permissions=0&scope=bot%20applications.commands')
+    pass
 
 if __name__=='__main__':
     load_dotenv()
