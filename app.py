@@ -1,16 +1,14 @@
-import re
 import discord
 import io
-from code_getter import get_collection
+from get_code import collection_to_page
 from dotenv import load_dotenv
 import os
 
 bot = discord.Client()
-re_url=re.compile('https?:\/\/[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]+)*(\/\S*)?')
 html_data=open('download.htm','r',encoding='utf-8').read()
 
-def io_get(urls:list):
-    return io.BytesIO(html_data.replace('{urls}',str(urls)).encode('utf-8'))
+def io_get(data:str):
+    return io.BytesIO(data.encode('utf-8'))
 
 @bot.event
 async def on_message(message:discord.Message):
@@ -19,40 +17,35 @@ async def on_message(message:discord.Message):
     data=message.content
     if not data:
         return
-    print(message.author,data)
+    print(f'[{message.author}] {data}')
     data=data.split(' ')
     cmd=data[0]
     if cmd!='collection_download' and cmd!='cdl' :
-        print(True,"=> command pass")
+        print("[Debug] Pass.")
         return
     if len(data)!=2:
-        print(False,"=> argument error")
+        print("[Debug] Argument Error")
         return
 
     url=data[1]
 
-    if not re_url.fullmatch(url):
-        await message.channel.send(f'Please give me a link of minecraft planet collection.')
-        print(False,"=> not url")
-        return
-
     try:
         cname=url.split('/')[5]
         await message.channel.send(f'Preparing the collection \"{cname}\" ...')
-        print(True,"=> crawl start ")
-        dp,rp=get_collection(url)
-        
+        print("[Debug] Crawl Start")
+        data=collection_to_page(url)
     except:
         await message.channel.send('This link is not minecraft planet collection :((')
-        print(False,"=> link is not minecraft planet collection ")
+        print("[Debug] Crawl Error")
         return
 
     files=[]
-    files.append(discord.File(io_get(dp),filename='datapacks-download.htm'))
-    files.append(discord.File(io_get(rp),filename='resourcepacks-download.htm'))
-    content=f'Hello, the collection \"{cname}\" is prepared\n'
+    files.append(discord.File(io_get(data),filename='download.htm'))
+    print(data)
+    content=f'Hello, the collection \"{cname}\" is prepared!\nRun download.htm below with chrome!'
+    print("[Debug] Crawl Successfully")
     await message.channel.send(content, files=files)
-    print(True,"=> crawl successfully")
+    
 
 load_dotenv()
 

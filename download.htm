@@ -3,25 +3,80 @@
 <head>
     <script>
         function bdload() {
-            var urls = {urls}
+            var data_packs = ['data_packs']
+            var texture_packs= ['texture_packs']
+            var others= ['others']
 
-            for (var i in urls) {
-                download(urls[i]);
+            for (var i in data_packs) {
+                append('data_packs',data_packs[i]);
+            }
+            for (var i in texture_packs) {
+                append('texture_packs',texture_packs[i]);
+            }
+            for (var i in others) {
+                append('others',others[i]);
             }
 
-            function download(url) {
-                var a = document.createElement("a");
+            function append(id,url) {
+                var a=document.createElement("a")
+                var li=document.createElement("li")
+                document.getElementById(id).appendChild(li)
                 a.setAttribute('href', url);
                 a.setAttribute('download', '');
+                a.innerHTML=url
                 a.setAttribute('target', '_blank');
-                a.click();
+                li.appendChild(a)
+            }
+        }
+        function download(id){
+            ul=document.getElementById(id).getElementsByTagName('a')
+            for(let i=0;i<ul.length;i++){
+                ul[i].click();
             }
         }
     </script>
 </head>
 
 <body onload="bdload()">
+    <h1>
+        Collection
+    </h1>
+    <a href="collection_name">
+        <ul>collection_name</ul>
+    </a>
+    <h1>
+        Data Packs
+    </h1>
+    <ul id="data_packs">
+        
+    </ul>
+    <ul>
+        <button onclick="download('data_packs')">
+            Download!
+        </button>
+    </ul>
+    <h1>
+        Texture Packs
+    </h1>
+    <ul id="texture_packs">
 
+    </ul>
+    <ul>
+        <button onclick="download('texture_packs')">
+            Download!
+        </button>
+    </ul>
+    <h1>
+        Other Contents
+    </h1>
+    <ul id="others">
+
+    </ul>
+    <ul>
+        <button onclick="download('others')">
+            Download!
+        </button>
+    </ul>
 </body>
 
 </html>
