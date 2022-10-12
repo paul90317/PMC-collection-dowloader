@@ -66,7 +66,7 @@ async def on_ready():
 
 
 def flask_run():
-    app.run(port=int(os.environ.get('PORT',80)))
+    app.run(port=int(os.getenv('PORT',80)))
 
 if __name__=='__main__':
     t=threading.Thread(target=flask_run)
