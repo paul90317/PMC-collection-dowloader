@@ -1,3 +1,4 @@
+from crypt import methods
 import random
 import discord
 from get_code import collection_to_page
@@ -13,10 +14,9 @@ load_dotenv()
 file_temp={}
 domain=os.getenv('DOMAIN')
 
-@app.get('/')
+@app.route('/',methods=['GET'])
 def home():
     try:
-        print(request.args.get('nonce'))
         return file_temp[request.args.get('nonce')]
     except:
         return ''
