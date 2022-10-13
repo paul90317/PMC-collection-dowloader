@@ -1,10 +1,11 @@
 import crawl
 import asyncio
 import warnings
+from parser import parser
 warnings.filterwarnings('ignore',category=DeprecationWarning)
 html_data=open('download.htm','r',encoding='utf-8').read()
 
-def collection_classify(url:str):
+def collection_classify(url:str)->tuple[list]:
     dps=[]
     tps=[]
     ots=[]
@@ -16,9 +17,9 @@ def collection_classify(url:str):
     if type(packs)==str:
         return dps,tps,ots
     for url in packs:
-        if crawl.is_datapack(url):
+        if parser.datapack(url):
             dps.append(url)
-        elif crawl.is_texturepack(url):
+        elif parser.texturepack(url):
             tps.append(url)
         else:
             ots.append(url)
@@ -26,17 +27,17 @@ def collection_classify(url:str):
         dps2=[]
         tasks=[]
         for url in dps:
-            if crawl.is_datapack(url):
+            if parser.datapack(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_datapack(url)))
-            elif crawl.is_curseforge(url):
+            elif parser.curseforge(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_curseforge(url)))
-            elif crawl.is_adfoc(url):
+            elif parser.adfoc(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_adfoc(url)))
-            elif crawl.is_mediafire(url):
+            elif parser.mediafire(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_mediafire(url)))
-            elif crawl.is_mirror(url):
+            elif parser.mirror(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_mirror(url)))
-            elif crawl.is_ignore(url):
+            elif parser.ignore(url):
                 ots.append(url)
             else:
                 dps2.append(url)
@@ -60,17 +61,17 @@ def collection_classify(url:str):
         tps2=[]
         tasks=[]
         for url in tps:
-            if crawl.is_texturepack(url):
-                tasks.append(asyncio.ensure_future(crawl.expand_texture(url))) 
-            elif crawl.is_curseforge(url):
+            if parser.texturepack(url):
+                tasks.append(asyncio.ensure_future(crawl.expand_texturepack(url))) 
+            elif parser.curseforge(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_curseforge(url))) 
-            elif crawl.is_adfoc(url):
+            elif parser.adfoc(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_adfoc(url))) 
-            elif crawl.is_mediafire(url):
+            elif parser.mediafire(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_mediafire(url))) 
-            elif crawl.is_mirror(url):
+            elif parser.mirror(url):
                 tasks.append(asyncio.ensure_future(crawl.expand_mirror(url))) 
-            elif crawl.is_ignore(url):
+            elif parser.ignore(url):
                 ots.append(url)
             else:
                 tps2.append(url)

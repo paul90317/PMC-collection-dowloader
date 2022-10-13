@@ -129,3 +129,4 @@ dmypy.json
 .pyre/
 .env
 out.htm
+test.py

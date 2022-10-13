@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import os
 import nest_asyncio
 import crawl
+from parser import parser
 nest_asyncio.apply()
 
 bot = commands.Bot(command_prefix='/',intents=discord.Intents.default())
@@ -14,11 +15,11 @@ def io_get(data:str):
     return io.BytesIO(data.encode('utf-8'))
 
 @bot.command()
-async def cdl(ctx:commands.context.Context, url:str):
+async def cdl(ctx:commands.context.Context, url='https://www.planetminecraft.com/collection/147813/hello-world/'):
     print(f'[{ctx.author.name}] {url}')
 
-    if not crawl.is_collection(url):
-        await ctx.send('This link is not minecraft planet collection :((')
+    if not parser.collection(url):
+        await ctx.send('This is not a minecraft planet collection link :((')
         print("[Debug] Crawl Error")
         return
 
