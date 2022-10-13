@@ -7,8 +7,8 @@ import aiohttp
 user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
 accept='text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
 
-async def get(url):
-    stimeout =  aiohttp.ClientTimeout(total=None,sock_connect=0.2,sock_read=0.2)
+async def get(url:str):
+    stimeout = aiohttp.ClientTimeout(total=None,sock_connect=0.2,sock_read=0.2)
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url,headers={
