@@ -4,6 +4,9 @@ import io
 from get_code import collection_to_page
 from dotenv import load_dotenv
 import os
+import nest_asyncio
+import crawl
+nest_asyncio.apply()
 
 bot = commands.Bot(command_prefix='/',intents=discord.Intents.default())
 
@@ -13,15 +16,16 @@ def io_get(data:str):
 @bot.command()
 async def cdl(ctx:commands.context.Context, url:str):
     print(f'[{ctx.author.name}] {url}')
-    try:
-        cname=url.split('/')[5]
-        await ctx.send(f'Preparing the collection \"{cname}\" ...')
-        print("[Debug] Crawl Start")
-        data=collection_to_page(url)
-    except:
+
+    if not crawl.is_collection(url):
         await ctx.send('This link is not minecraft planet collection :((')
         print("[Debug] Crawl Error")
         return
+
+    cname=url.split('/')[5]
+    await ctx.send(f'Preparing the collection \"{cname}\" ...')
+    print("[Debug] Crawl Start")
+    data=collection_to_page(url)
 
     files=[]
     files.append(discord.File(io_get(data),filename='download.htm'))

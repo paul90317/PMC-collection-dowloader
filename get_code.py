@@ -1,12 +1,20 @@
 import crawl
-
+import asyncio
+import warnings
+warnings.filterwarnings('ignore',category=DeprecationWarning)
 html_data=open('download.htm','r',encoding='utf-8').read()
 
 def collection_classify(url:str):
-    packs=crawl.expand_collection(url)
     dps=[]
     tps=[]
     ots=[]
+    tasks=[]
+    tasks.append(asyncio.ensure_future(crawl.expand_collection(url)))
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.wait(tasks))
+    packs=tasks[0].result()
+    if type(packs)==str:
+        return dps,tps,ots
     for url in packs:
         if crawl.is_datapack(url):
             dps.append(url)
@@ -14,78 +22,69 @@ def collection_classify(url:str):
             tps.append(url)
         else:
             ots.append(url)
-    for iii in range(5):
-        nochange=True
+    for _ in range(5):
         dps2=[]
+        tasks=[]
         for url in dps:
             if crawl.is_datapack(url):
-                dp,tp=crawl.expand_datapack(url)
-                dps2+=dp
-                tps+=tp
-                if dp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_datapack(url)))
             elif crawl.is_curseforge(url):
-                dp=crawl.expand_curseforge(url)
-                dps2+=dp
-                nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_curseforge(url)))
             elif crawl.is_adfoc(url):
-                dp=crawl.expand_adfoc(url)
-                dps2+=dp
-                if dp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_adfoc(url)))
             elif crawl.is_mediafire(url):
-                dp=crawl.expand_mediafire(url)
-                dps2+=dp
-                if dp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_mediafire(url)))
             elif crawl.is_mirror(url):
-                dp=crawl.expand_mirror(url)
-                dps2+=dp
-                if dp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_mirror(url)))
             elif crawl.is_ignore(url):
                 ots.append(url)
             else:
                 dps2.append(url)
-        dps=dps2
-        if nochange:
+        if len(tasks)==0:
             break
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.wait(tasks))
+        for t in tasks:
+            data=t.result()
+            if type(data)==str:
+                dps2.append(data)
+            elif type(data)==tuple:
+                dp,tp=data
+                dps2+=dp
+                tps+=tp
+            else:
+                dps2+=data
+        dps=dps2
         
-    for iii in range(5):
-        nochange=True
+    for _ in range(5):
         tps2=[]
+        tasks=[]
         for url in tps:
             if crawl.is_texturepack(url):
-                tp=crawl.expand_texture(url)
-                tps2+=tp
-                if tp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_texture(url))) 
             elif crawl.is_curseforge(url):
-                tp=crawl.expand_curseforge(url)
-                tps2+=tp
-                nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_curseforge(url))) 
             elif crawl.is_adfoc(url):
-                tp=crawl.expand_adfoc(url)
-                tps2+=tp
-                if tp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_adfoc(url))) 
             elif crawl.is_mediafire(url):
-                tp=crawl.expand_mediafire(url)
-                tps2+=tp
-                if tp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_mediafire(url))) 
             elif crawl.is_mirror(url):
-                tp=crawl.expand_mirror(url)
-                tps2+=tp
-                if tp[0]!=url:
-                    nochange=False
+                tasks.append(asyncio.ensure_future(crawl.expand_mirror(url))) 
             elif crawl.is_ignore(url):
                 ots.append(url)
             else:
                 tps2.append(url)
-        tps=tps2
-        if nochange:
+        if len(tasks)==0:
             break
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.wait(tasks))
+        for t in tasks:
+            data=t.result()
+            if type(data)==str:
+                tps2.append(data)
+            else:
+                tps2+=data
+        tps=tps2
        
     return dps,tps,ots
     
