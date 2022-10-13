@@ -25,7 +25,7 @@ async def cdl(ctx:commands.context.Context, url='https://www.planetminecraft.com
     data=collection_to_page(url)
 
     files=[discord.File(io_get(data),filename='download.htm')]
-    content=f'{ctx.author.mention}, the collection `{url}` is prepared!\nRun `download.htm` below with **chrome**!'
+    content=f'{ctx.author.mention}, the collection `{url}` is prepared!\nDownload and run `download.htm` below with **chrome**!'
     print("[Debug] Crawl Successfully")
     await ctx.channel.send(content, files=files)
 
