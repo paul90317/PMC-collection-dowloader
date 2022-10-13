@@ -12,12 +12,14 @@ TOKEN=<token>
 ## 技術點
 ### 非同步爬蟲
 [./crawl.py](./crawl.py)
+非同步爬蟲函式。
 ### Event Loop
 [./get_code.py](./get_code.py)
-用 event loop 執行非同步方法。
+用 **event loop** 執行多個非同步方法。
 ### Regular Expression
 [./parser.py](./parser.py)
+用來辨識連結是否為短連結或重導向，是的話要用爬蟲自動重導向。
 ### Discord Bot Py
-[./app.py](./app.py)
+[./app.py](./app.py) 機器人本體。
 ## Discord Bot 使用說明
 [PMC Collection Downloader](https://www.planetminecraft.com/mod/collection-downloader-discord-bot-5470111/)
